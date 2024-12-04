@@ -4,20 +4,20 @@ import todoServices from "../services/todo";
 
 interface TodoProps {
   todo: Todo;
+  listName: string;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
-  listName: string
+  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
 const TodoItem = ({
   todo,
+  listName,
   setModalStatus,
   setSelectedTodo,
   setAllTodos,
   setSelectedList,
-  listName
 }: TodoProps) => {
   const handleToggleComplete = (id: number) => {
     todoServices

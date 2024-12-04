@@ -9,8 +9,8 @@ interface ModalProps {
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
-  setListName: React.Dispatch<React.SetStateAction<string>>
+  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setListName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Modal = ({
@@ -20,10 +20,12 @@ const Modal = ({
   setAllTodos,
   setModalStatus,
   setSelectedList,
-  setListName
+  setListName,
 }: ModalProps) => {
   const [title, setTitle] = useState(selectedTodo ? selectedTodo.title : "");
-  const [description, setDescription] = useState(selectedTodo ? selectedTodo.description : "");
+  const [description, setDescription] = useState(
+    selectedTodo ? selectedTodo.description : ""
+  );
   const [day, setDay] = useState(selectedTodo ? selectedTodo.day : "  ");
   const [month, setMonth] = useState(selectedTodo ? selectedTodo.month : "  ");
   const [year, setYear] = useState(selectedTodo ? selectedTodo.year : "    ");
@@ -46,14 +48,26 @@ const Modal = ({
     todoServices
       .updateTodo(selectedTodo.id, updatedTodoData)
       .then((updatedTodo) => {
-        setAllTodos(allTodos.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
-        setSelectedList(selectedList => selectedList.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
-      }
-      );
+        setAllTodos(
+          allTodos.map((todo) =>
+            todo.id === selectedTodo.id ? updatedTodo : todo
+          )
+        );
+        setSelectedList((selectedList) =>
+          selectedList.map((todo) =>
+            todo.id === selectedTodo.id ? updatedTodo : todo
+          )
+        );
+      });
     exitModal();
   };
 
   const addNewTodo = () => {
+    if (title.trim().length < 3) {
+      alert("You must enter a title at least 3 characters long.");
+      return;
+    }
+
     const newTodoData: NewTodo = formatNewTodo({
       title,
       description,
@@ -62,18 +76,11 @@ const Modal = ({
       year,
     });
 
-    if (newTodoData.title.trim().length < 3) {
-      alert('You must enter a title at least 3 characters long.')
-      return
-    }
-
-    todoServices
-      .addTodo(newTodoData)
-      .then((newTodo) => {
-        setAllTodos([...allTodos, newTodo])
-        setSelectedList([...allTodos, newTodo])
-        setListName('All Todos')
-      });  
+    todoServices.addTodo(newTodoData).then((newTodo) => {
+      setAllTodos([...allTodos, newTodo]);
+      setSelectedList([...allTodos, newTodo]);
+      setListName("All Todos");
+    });
     exitModal();
   };
 
@@ -95,11 +102,17 @@ const Modal = ({
       todoServices
         .toggleCompleteTodo(selectedTodo.id, true)
         .then((updatedTodo) => {
-          setAllTodos(allTodos.map((todo) =>
-              todo.id === selectedTodo.id ? updatedTodo : todo))
-          setSelectedList(selectedList => selectedList.map((todo) =>
-            todo.id === selectedTodo.id ? updatedTodo : todo))
-          });
+          setAllTodos(
+            allTodos.map((todo) =>
+              todo.id === selectedTodo.id ? updatedTodo : todo
+            )
+          );
+          setSelectedList((selectedList) =>
+            selectedList.map((todo) =>
+              todo.id === selectedTodo.id ? updatedTodo : todo
+            )
+          );
+        });
       exitModal();
     } else {
       alert("Cannot mark as complete as item has not been created yet!");
