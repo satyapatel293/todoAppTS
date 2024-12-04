@@ -9,6 +9,9 @@ interface ModalProps {
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedList: Todo[]
+  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
+  setListName: React.Dispatch<React.SetStateAction<string>>
 }
 
 const Modal = ({
@@ -17,6 +20,9 @@ const Modal = ({
   allTodos,
   setAllTodos,
   setModalStatus,
+  selectedList,
+  setSelectedList,
+  setListName
 }: ModalProps) => {
   const [title, setTitle] = useState(selectedTodo ? selectedTodo.title : "");
   const [description, setDescription] = useState(selectedTodo ? selectedTodo.description : "");
@@ -41,12 +47,10 @@ const Modal = ({
 
     todoServices
       .updateTodo(selectedTodo.id, updatedTodoData)
-      .then((updatedTodo) =>
-        setAllTodos(
-          allTodos.map((todo) =>
-            todo.id === selectedTodo.id ? updatedTodo : todo
-          )
-        )
+      .then((updatedTodo) => {
+        setAllTodos(allTodos.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
+        setSelectedList(selectedList.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
+      }
       );
     exitModal();
   };
@@ -67,7 +71,11 @@ const Modal = ({
 
     todoServices
       .addTodo(newTodoData)
-      .then((newTodo) => setAllTodos([...allTodos, newTodo]));  
+      .then((newTodo) => {
+        setAllTodos([...allTodos, newTodo])
+        setSelectedList([...allTodos, newTodo])
+        setListName('All Todos')
+      });  
     exitModal();
   };
 
@@ -88,10 +96,12 @@ const Modal = ({
     if (selectedTodo) {
       todoServices
         .toggleCompleteTodo(selectedTodo.id, true)
-        .then((updatedTodo) =>
+        .then((updatedTodo) => {
           setAllTodos(allTodos.map((todo) =>
               todo.id === selectedTodo.id ? updatedTodo : todo))
-        );
+          setSelectedList(selectedList.map((todo) =>
+            todo.id === selectedTodo.id ? updatedTodo : todo))
+          });
       exitModal();
     } else {
       alert("Cannot mark as complete as item has not been created yet!");

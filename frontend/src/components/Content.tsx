@@ -3,12 +3,15 @@ import TodoItem from "./TodoItem";
 
 interface ContentProps {
   allTodos: Todo[];
-  setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>
+  setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
+  selectedList: Todo[]
+  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
+  listName: string
 }
 
-const Content = ({ allTodos, setModalStatus, setSelectedTodo, setAllTodos}: ContentProps) => {
+const Content = ({ allTodos, setModalStatus, setSelectedTodo, setAllTodos, selectedList, listName, setSelectedList}: ContentProps) => {
 
   const handleAddTodo = (event:React.SyntheticEvent) => {
     event.preventDefault()
@@ -24,9 +27,9 @@ const Content = ({ allTodos, setModalStatus, setSelectedTodo, setAllTodos}: Cont
         </label>
         <dl>
           <dt>
-            <time>All Todos</time>
+            <time>{listName.replace(' done', '')}</time>
           </dt>
-          <dd>{allTodos.length}</dd>
+          <dd>{selectedList.length}</dd>
         </dl>
       </header>
       <main>
@@ -36,14 +39,17 @@ const Content = ({ allTodos, setModalStatus, setSelectedTodo, setAllTodos}: Cont
         </label>
         <table cellSpacing="0">
           <tbody>
-            {allTodos.map((todo) => (
+            {selectedList.map((todo) => (
               <TodoItem
                 key={todo.id}
                 todo={todo}
                 allTodos={allTodos}
                 setAllTodos={setAllTodos}
+                setSelectedList={setSelectedList}
+                selectedList={selectedList}
                 setModalStatus={setModalStatus}
                 setSelectedTodo={setSelectedTodo}
+                listName={listName}
               />
             ))}
           </tbody>

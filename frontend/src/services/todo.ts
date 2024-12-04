@@ -30,7 +30,7 @@ const toggleCompleteTodo = (id: number, status?: boolean) => {
     return updateTodo(id, {completed: status})
   }
 
-  return toggle().then(todo => todo)
+  return toggle()
 };
 
 const deleteTodo = (id: number) => {
