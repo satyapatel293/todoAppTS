@@ -11,8 +11,8 @@ function App() {
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
   const [modalStatus, setModalStatus] = useState<boolean>(false);
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
-  const [selectedList, setSelectedList] = useState<Todo[]>([])
   const [listName, setListName] = useState<string>('All Todos')  
+  const [selectedList, setSelectedList] = useState<Todo[]>([])
 
   useEffect(() => {
     todoServices.getAllTodos().then((todos) => {
@@ -23,32 +23,29 @@ function App() {
 
   const sortedTodos = sortTodos(selectedList)
 
-
   return (
     <>
       <Nav 
         allTodos={allTodos}
-        setSelectedList={setSelectedList}
         listName={listName}
         setListName={setListName}
+        setSelectedList={setSelectedList}
       />
       <Content
-        allTodos={allTodos}
+        selectedList={sortedTodos}
+        listName={listName}
         setModalStatus={setModalStatus}
         setSelectedTodo={setSelectedTodo}
         setAllTodos={setAllTodos}
-        selectedList={sortedTodos}
         setSelectedList={setSelectedList}
-        listName={listName}
       />
-      {modalStatus &&
+      { modalStatus &&
         <Modal
-          selectedTodo={selectedTodo}
           allTodos={allTodos}
+          selectedTodo={selectedTodo}
           setAllTodos={setAllTodos}
           setModalStatus={setModalStatus}
           setSelectedTodo={setSelectedTodo}
-          selectedList={sortedTodos}
           setSelectedList={setSelectedList}
           setListName={setListName}
         />

@@ -14,6 +14,7 @@ const Nav = ({
   setSelectedList,
   setListName,
 }: NavProps) => {
+  
   const handleClick = (list: Todo[], name: string) => {
     setSelectedList(list);
     setListName(name);

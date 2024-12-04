@@ -68,7 +68,7 @@ const sortByDate = (list:{ [date:string]:Todo[] }[]) : { [date:string]:Todo[] }[
     const dateA = Object.keys(a)[0]
     const dateB = Object.keys(b)[0]
 
-    if (dateA === 'No Due Date') return 1
+    if (dateA === 'No Due Date') return -1
     if (dateB === 'No Due Date') return 1 
 
     const [monthA, yearA] = dateA.split('/').map(stringDate => parseInt(stringDate))

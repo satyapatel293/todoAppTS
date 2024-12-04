@@ -4,23 +4,21 @@ import { NewTodo, Todo, UpdatedTodo } from "../types";
 import { formatNewTodo } from "../utils";
 
 interface ModalProps {
-  selectedTodo: Todo | null;
   allTodos: Todo[];
+  selectedTodo: Todo | null;
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedList: Todo[]
   setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
   setListName: React.Dispatch<React.SetStateAction<string>>
 }
 
 const Modal = ({
+  allTodos,
   selectedTodo,
   setSelectedTodo,
-  allTodos,
   setAllTodos,
   setModalStatus,
-  selectedList,
   setSelectedList,
   setListName
 }: ModalProps) => {
@@ -49,7 +47,7 @@ const Modal = ({
       .updateTodo(selectedTodo.id, updatedTodoData)
       .then((updatedTodo) => {
         setAllTodos(allTodos.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
-        setSelectedList(selectedList.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
+        setSelectedList(selectedList => selectedList.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
       }
       );
     exitModal();
@@ -99,7 +97,7 @@ const Modal = ({
         .then((updatedTodo) => {
           setAllTodos(allTodos.map((todo) =>
               todo.id === selectedTodo.id ? updatedTodo : todo))
-          setSelectedList(selectedList.map((todo) =>
+          setSelectedList(selectedList => selectedList.map((todo) =>
             todo.id === selectedTodo.id ? updatedTodo : todo))
           });
       exitModal();

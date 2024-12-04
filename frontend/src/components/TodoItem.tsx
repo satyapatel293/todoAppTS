@@ -3,13 +3,11 @@ import { parseDueDate } from "../utils";
 import todoServices from "../services/todo";
 
 interface TodoProps {
-  allTodos: Todo[];
   todo: Todo;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
-  selectedList: Todo[]
   listName: string
 }
 
@@ -18,31 +16,28 @@ const TodoItem = ({
   setModalStatus,
   setSelectedTodo,
   setAllTodos,
-  allTodos,
   setSelectedList,
-  selectedList,
   listName
 }: TodoProps) => {
   const handleToggleComplete = (id: number) => {
     todoServices
       .toggleCompleteTodo(id)
       .then((updatedTodo) => {
-        setAllTodos(allTodos.map((todo) => (todo.id === id ? updatedTodo : todo)))
+        setAllTodos(allTodos => allTodos.map((todo) => (todo.id === id ? updatedTodo : todo)))
+        setSelectedList(selectedList => selectedList.map((todo) => (todo.id === id ? updatedTodo : todo)))
         if (listName.includes('done')) {
-          setSelectedList((selectedList.map((todo) => (todo.id === id ? updatedTodo : todo)).filter((todo) => todo.completed)))
-        } else {
-          setSelectedList(selectedList.map((todo) => (todo.id === id ? updatedTodo : todo)))
+          setSelectedList(selectedList => selectedList.filter((todo) => todo.completed))
         }
       }
       );
   };
-
+  
   const handleDeleteTodo = (id: number) => {
     todoServices
       .deleteTodo(id)
       .then(() => { 
-        setAllTodos(allTodos.filter((todo) => todo.id !== id))
-        setSelectedList(selectedList.filter((todo) => todo.id !== id))
+        setAllTodos(allTodos => allTodos.filter((todo) => todo.id !== id))
+        setSelectedList(selectedList => selectedList.filter((todo) => todo.id !== id))
       }
     );
   };
