@@ -3,45 +3,34 @@ import { NewTodo, Todo, UpdatedTodo } from "../types";
 
 const BaseUrl = "http://localhost:3000/api";
 
-const getAllTodos = () => {
-  return axios
-    .get<Todo[]>(`${BaseUrl}/todos`)
-    .then((response) => response.data);
+const getAllTodos = async () => {
+  const response = await axios.get<Todo[]>(`${BaseUrl}/todos`);
+  return response.data;
 };
 
-const getTodo = (id:number) => {
-  return axios
-  .get<Todo>(`${BaseUrl}/todos/${id}`)
-  .then((response) => response.data);
-}
-
-const updateTodo = (id: number, content: UpdatedTodo) => {
-  return axios
-    .put<Todo>(`${BaseUrl}/todos/${id}`, content)
-    .then((response) => response.data);
+const getTodo = async (id: number) => {
+  const response = await axios.get<Todo>(`${BaseUrl}/todos/${id}`);
+  return response.data;
 };
 
-const toggleCompleteTodo = (id: number, status?: boolean) => {
-  async function toggle () {
-    const todo = await getTodo(id)
-    if (status === undefined) {
-      status = !todo.completed
-    }
-    return updateTodo(id, {completed: status})
-  }
+const updateTodo = async (id: number, content: UpdatedTodo) => {
+  const response = await axios.put<Todo>(`${BaseUrl}/todos/${id}`, content);
+  return response.data;
+};
 
-  return toggle()
+const toggleCompleteTodo = async (id: number, status?: boolean) => {
+  const todo = await getTodo(id);
+  if (status === undefined) status = !todo.completed;
+  return updateTodo(id, { completed: status });
 };
 
 const deleteTodo = (id: number) => {
-  return axios
-    .delete(`${BaseUrl}/todos/${id}`)
+  return axios.delete(`${BaseUrl}/todos/${id}`);
 };
 
-const addTodo = (content: NewTodo) => {
-  return axios
-    .post<Todo>(`${BaseUrl}/todos`, content)
-    .then((response) => response.data);
+const addTodo = async (content: NewTodo) => {
+  const response = await axios.post<Todo>(`${BaseUrl}/todos`, content);
+  return response.data;
 };
 
 export default {
@@ -50,5 +39,5 @@ export default {
   updateTodo,
   toggleCompleteTodo,
   deleteTodo,
-  addTodo
+  addTodo,
 };

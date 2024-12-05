@@ -2,19 +2,24 @@ import { Todo } from "../types";
 import TodoItem from "./TodoItem";
 
 interface ContentProps {
-  listName: string
-  selectedList: Todo[]
+  listName: string;
+  selectedList: Todo[];
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Content = ({ selectedList, listName, setModalStatus, setSelectedTodo, setAllTodos }: ContentProps) => {
-
+const Content = ({
+  listName,
+  selectedList,
+  setAllTodos,
+  setSelectedTodo,
+  setModalStatus,
+}: ContentProps) => {
   const handleAddTodo = () => {
-    setModalStatus(true)
-    setSelectedTodo(null)
-  }
+    setSelectedTodo(null);
+    setModalStatus(true);
+  };
 
   return (
     <div id="items">
@@ -24,7 +29,7 @@ const Content = ({ selectedList, listName, setModalStatus, setSelectedTodo, setA
         </label>
         <dl>
           <dt>
-            <time>{listName.replace(' done', '')}</time>
+            <time>{listName.replace(" done", "")}</time>
           </dt>
           <dd>{selectedList.length}</dd>
         </dl>
@@ -41,8 +46,8 @@ const Content = ({ selectedList, listName, setModalStatus, setSelectedTodo, setA
                 key={todo.id}
                 todo={todo}
                 setAllTodos={setAllTodos}
-                setModalStatus={setModalStatus}
                 setSelectedTodo={setSelectedTodo}
+                setModalStatus={setModalStatus}
               />
             ))}
           </tbody>

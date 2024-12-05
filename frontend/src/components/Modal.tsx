@@ -6,32 +6,30 @@ import { formatNewTodo } from "../utils";
 interface ModalProps {
   selectedTodo: Todo | null;
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
+  setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setListName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Modal = ({
   selectedTodo,
-  setSelectedTodo,
   setAllTodos,
   setModalStatus,
+  setSelectedTodo,
   setListName,
 }: ModalProps) => {
   const [title, setTitle] = useState(selectedTodo ? selectedTodo.title : "");
-  const [description, setDescription] = useState(
-    selectedTodo ? selectedTodo.description : ""
-  );
+  const [description, setDescription] = useState(selectedTodo ? selectedTodo.description : "");
   const [day, setDay] = useState(selectedTodo ? selectedTodo.day : "  ");
   const [month, setMonth] = useState(selectedTodo ? selectedTodo.month : "  ");
   const [year, setYear] = useState(selectedTodo ? selectedTodo.year : "    ");
 
   const exitModal = () => {
-    setModalStatus(false);
     setSelectedTodo(null);
+    setModalStatus(false);
   };
 
-  const updateExistingTodo = () => {
+  const updateExistingTodo = async () => {
     if (selectedTodo === null) return;
     const updatedTodoData: UpdatedTodo = {
       title,
@@ -41,19 +39,14 @@ const Modal = ({
       year,
     };
 
-    todoServices
-      .updateTodo(selectedTodo.id, updatedTodoData)
-      .then((updatedTodo) => {
-        setAllTodos((allTodos) =>
-          allTodos.map((todo) =>
-            todo.id === selectedTodo.id ? updatedTodo : todo
-          )
-        );
-      });
+    const updatedTodo = await todoServices.updateTodo(selectedTodo.id, updatedTodoData);
+    setAllTodos((allTodos) =>
+      allTodos.map((todo) => (todo.id === selectedTodo.id ? updatedTodo : todo))
+    );
     exitModal();
   };
 
-  const addNewTodo = () => {
+  const addNewTodo = async () => {
     if (title.trim().length < 3) {
       alert("You must enter a title at least 3 characters long.");
       return;
@@ -67,10 +60,9 @@ const Modal = ({
       year,
     });
 
-    todoServices.addTodo(newTodoData).then((newTodo) => {
-      setAllTodos((allTodos) => [...allTodos, newTodo]);
-      setListName("All Todos");
-    });
+    const newTodo = await todoServices.addTodo(newTodoData)
+    setAllTodos((allTodos) => [...allTodos, newTodo]);
+    setListName("All Todos");
     exitModal();
   };
 
@@ -83,21 +75,14 @@ const Modal = ({
     }
   };
 
-  const handleMarkComplete = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const handleMarkComplete = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
     if (selectedTodo) {
-      todoServices
-        .toggleCompleteTodo(selectedTodo.id, true)
-        .then((updatedTodo) => {
-          setAllTodos((allTodos) =>
-            allTodos.map((todo) =>
-              todo.id === selectedTodo.id ? updatedTodo : todo
-            )
-          );
-        });
+      const updatedTodo = await todoServices.toggleCompleteTodo(selectedTodo.id, true)
+      setAllTodos((allTodos) =>
+        allTodos.map((todo) =>todo.id === selectedTodo.id ? updatedTodo : todo)
+      );
       exitModal();
     } else {
       alert("Cannot mark as complete as item has not been created yet!");

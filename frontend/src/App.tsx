@@ -14,9 +14,12 @@ function App() {
   const [selectedTodo, setSelectedTodo] = useState<Todo | null>(null);
 
   useEffect(() => {
-    todoServices.getAllTodos().then((todos) => {
+    async function initializeState() {
+      const todos = await todoServices.getAllTodos()
       setAllTodos(todos)
-    });
+    }
+    
+    initializeState()
   }, []);
 
   const sortedSelectedList = sortTodos(filterByListName(allTodos, listName))

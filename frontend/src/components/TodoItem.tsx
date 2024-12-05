@@ -15,31 +15,23 @@ const TodoItem = ({
   setSelectedTodo,
   setAllTodos,
 }: TodoProps) => {
-  const handleToggleComplete = (id: number) => {
-    todoServices
-      .toggleCompleteTodo(id)
-      .then((updatedTodo) => {
-        setAllTodos(allTodos => allTodos.map((todo) => (todo.id === id ? updatedTodo : todo)))
-      }
-      );
-  };
-  
-  const handleDeleteTodo = (id: number) => {
-    todoServices
-      .deleteTodo(id)
-      .then(() => { 
-        setAllTodos(allTodos => allTodos.filter((todo) => todo.id !== id))
-      }
-    );
+  const handleToggleComplete = async (id: number) => {
+    const updatedTodo = await todoServices.toggleCompleteTodo(id);
+    setAllTodos((allTodos) => allTodos.map((todo) => (todo.id === id ? updatedTodo : todo)));
   };
 
-  const handleEditTodo = (event: React.SyntheticEvent, id: number) => {
+  const handleDeleteTodo = async (id: number) => {
+    await todoServices.deleteTodo(id)
+    setAllTodos((allTodos) => allTodos.filter((todo) => todo.id !== id));
+  };
+
+  const handleEditTodo = async (event: React.SyntheticEvent, id: number) => {
     event.preventDefault();
     event.stopPropagation();
-    todoServices.getTodo(id).then((todo) => {
-      setModalStatus(true);
-      setSelectedTodo(todo);
-    });
+    const todo = await todoServices.getTodo(id)
+    setModalStatus(true);
+    setSelectedTodo(todo);
+    
   };
 
   return (
@@ -60,10 +52,7 @@ const TodoItem = ({
           {todo.title} - {parseDueDate(todo)}
         </label>
       </td>
-      <td
-        className="delete"
-        onClick={() => handleDeleteTodo(todo.id)}
-      >
+      <td className="delete" onClick={() => handleDeleteTodo(todo.id)}>
         <img src="images/trash.png" alt="Delete" />
       </td>
     </tr>
