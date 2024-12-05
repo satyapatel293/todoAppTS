@@ -41,8 +41,8 @@ const Nav = ({
           </div>
           <article id="all_lists">
             {dateSortedTodos(allTodos).map((group) => {
-              const date = Object.keys(group)[0];
-              const list = group[date]
+              const date = group.date;
+              const list = group.list
               return (
                 <dl
                   key={date}
@@ -75,8 +75,8 @@ const Nav = ({
           </div>
           <article id="completed_lists">
           {dateSortedTodos(completed).map((group) => {
-              const date = Object.keys(group)[0];
-              const list = group[date]
+              const date = group.date;
+              const list = group.list
               const formattedName = `${date} done`
               return (
                 <dl

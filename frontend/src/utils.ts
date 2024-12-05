@@ -1,4 +1,4 @@
-import { NewTodo, Todo } from "./types";
+import { NewTodo, Todo, DateGroupedTodos } from "./types";
 
 export const parseDueDate = (todo:Todo) => {
   if (todo.month.trim() && todo.year.trim()) {
@@ -46,27 +46,27 @@ export const completedTodos = (allTodos:Todo[]):Todo[] => {
 } 
 
 export const dateSortedTodos = (allTodos: Todo[]) => {
-  const dateGroupTodos:{ [date:string]:Todo[] }[] = []
+  const dateGroupTodos: DateGroupedTodos = []
   allTodos.forEach(todo => {
     const date = parseDueDate(todo)
     const index = dateGroupTodos.findIndex(group => {
-      return date in group
+      return group.date === date
     })
     
     if (index !== -1) {
-      dateGroupTodos[index][date].push(todo)
+      dateGroupTodos[index].list.push(todo)
     } else {
-      dateGroupTodos.push({[date]: [todo]})
+      dateGroupTodos.push({date:date, list:[todo]})
     }
   })
 
   return sortByDate(dateGroupTodos)
 }
 
-const sortByDate = (list:{ [date:string]:Todo[] }[]) : { [date:string]:Todo[] }[] => {
+const sortByDate = (list:DateGroupedTodos) => {
   return list.sort((a, b) => {
-    const dateA = Object.keys(a)[0]
-    const dateB = Object.keys(b)[0]
+    const dateA = a.date
+    const dateB = b.date
 
     if (dateA === 'No Due Date') return -1
     if (dateB === 'No Due Date') return 1 
