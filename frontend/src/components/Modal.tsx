@@ -4,22 +4,18 @@ import { NewTodo, Todo, UpdatedTodo } from "../types";
 import { formatNewTodo } from "../utils";
 
 interface ModalProps {
-  allTodos: Todo[];
   selectedTodo: Todo | null;
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>;
   setListName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Modal = ({
-  allTodos,
   selectedTodo,
   setSelectedTodo,
   setAllTodos,
   setModalStatus,
-  setSelectedList,
   setListName,
 }: ModalProps) => {
   const [title, setTitle] = useState(selectedTodo ? selectedTodo.title : "");
@@ -48,13 +44,8 @@ const Modal = ({
     todoServices
       .updateTodo(selectedTodo.id, updatedTodoData)
       .then((updatedTodo) => {
-        setAllTodos(
+        setAllTodos((allTodos) =>
           allTodos.map((todo) =>
-            todo.id === selectedTodo.id ? updatedTodo : todo
-          )
-        );
-        setSelectedList((selectedList) =>
-          selectedList.map((todo) =>
             todo.id === selectedTodo.id ? updatedTodo : todo
           )
         );
@@ -77,8 +68,7 @@ const Modal = ({
     });
 
     todoServices.addTodo(newTodoData).then((newTodo) => {
-      setAllTodos([...allTodos, newTodo]);
-      setSelectedList([...allTodos, newTodo]);
+      setAllTodos((allTodos) => [...allTodos, newTodo]);
       setListName("All Todos");
     });
     exitModal();
@@ -102,13 +92,8 @@ const Modal = ({
       todoServices
         .toggleCompleteTodo(selectedTodo.id, true)
         .then((updatedTodo) => {
-          setAllTodos(
+          setAllTodos((allTodos) =>
             allTodos.map((todo) =>
-              todo.id === selectedTodo.id ? updatedTodo : todo
-            )
-          );
-          setSelectedList((selectedList) =>
-            selectedList.map((todo) =>
               todo.id === selectedTodo.id ? updatedTodo : todo
             )
           );

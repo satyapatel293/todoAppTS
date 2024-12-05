@@ -81,3 +81,23 @@ const sortByDate = (list:DateGroupedTodos) => {
     return monthA-monthB
   })
 }
+
+export const filterByListName = (allTodos:Todo[], listName:string) => {
+  if (listName === 'All Todos') {
+    return allTodos
+  } else if (listName === 'Completed') {
+    return completedTodos(allTodos)
+  }
+
+  const todoAtDate = dateSortedTodos(allTodos).find(group => group.date === listName.replace(' done', ''))?.list
+
+  if (todoAtDate === undefined) {
+    return []
+  }
+  
+  if (listName.includes(' done')) {
+    return completedTodos(todoAtDate)
+  } 
+  
+  return todoAtDate
+}

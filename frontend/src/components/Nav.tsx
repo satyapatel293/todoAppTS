@@ -4,23 +4,32 @@ import { completedTodos, dateSortedTodos } from "../utils";
 interface NavProps {
   allTodos: Todo[];
   listName: string;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>;
   setListName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Nav = ({
   allTodos,
   listName,
-  setSelectedList,
   setListName,
 }: NavProps) => {
-  
-  const handleClick = (list: Todo[], name: string) => {
-    setSelectedList(list);
-    setListName(name);
-  };
 
   const completed = completedTodos(allTodos)
+
+  const navLink = (date:string, list:Todo[]) => {
+      return (
+        <dl
+          key={date}
+          className={date === listName ? "active" : ""}
+          onClick={() => setListName(date)}
+        >
+          <dt>
+            <time>{date.replace(' done', '')}</time>
+          </dt>
+          <dd>{list.length}</dd>
+        </dl>
+      );
+  }
+
 
   return (
     <div>
@@ -29,32 +38,12 @@ const Nav = ({
         <section id="all">
           <div id="all_todos">
             <header id="all_header" className={"All Todos" === listName ? "active" : ""} >
-                <dl
-                  onClick={() => handleClick(allTodos, "All Todos")}
-                >
-                  <dt>
-                    <time>All Todos</time>
-                  </dt>
-                  <dd>{allTodos.length}</dd>
-                </dl>
+                {navLink('All Todos', allTodos)}
             </header>
           </div>
           <article id="all_lists">
             {dateSortedTodos(allTodos).map((group) => {
-              const date = group.date;
-              const list = group.list
-              return (
-                <dl
-                  key={date}
-                  className={date === listName ? "active" : ""}
-                  onClick={() => handleClick(list, date)}
-                >
-                  <dt>
-                    <time>{date}</time>
-                  </dt>
-                  <dd>{list.length}</dd>
-                </dl>
-              );
+              return navLink(group.date, group.list)
             })}
           </article>
         </section>
@@ -63,33 +52,13 @@ const Nav = ({
             <header
               id="all_done_header"
               className={"Completed" === listName ? "active" : ""} >
-              <dl
-                onClick={() => handleClick(completed, "Completed")}
-              >
-                <dt>
-                  <time>Completed</time>
-                </dt>
-                <dd>{completed.length}</dd>
-              </dl>
+                {navLink('Completed', completed)}
           </header>
           </div>
           <article id="completed_lists">
           {dateSortedTodos(completed).map((group) => {
-              const date = group.date;
-              const list = group.list
-              const formattedName = `${date} done`
-              return (
-                <dl
-                  key={date}
-                  className={formattedName === listName ? "active" : ""}
-                  onClick={() => handleClick(list, formattedName)}
-                >
-                  <dt>
-                    <time>{date}</time>
-                  </dt>
-                  <dd>{list.length}</dd>
-                </dl>
-              );
+              const formattedDate = `${group.date} done`
+              return navLink(formattedDate, group.list)
             })}
           </article>
         </section>

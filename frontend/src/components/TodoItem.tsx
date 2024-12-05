@@ -4,30 +4,22 @@ import todoServices from "../services/todo";
 
 interface TodoProps {
   todo: Todo;
-  listName: string;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>;
 }
 
 const TodoItem = ({
   todo,
-  listName,
   setModalStatus,
   setSelectedTodo,
   setAllTodos,
-  setSelectedList,
 }: TodoProps) => {
   const handleToggleComplete = (id: number) => {
     todoServices
       .toggleCompleteTodo(id)
       .then((updatedTodo) => {
         setAllTodos(allTodos => allTodos.map((todo) => (todo.id === id ? updatedTodo : todo)))
-        setSelectedList(selectedList => selectedList.map((todo) => (todo.id === id ? updatedTodo : todo)))
-        if (listName.includes('done')) {
-          setSelectedList(selectedList => selectedList.filter((todo) => todo.completed))
-        }
       }
       );
   };
@@ -37,7 +29,6 @@ const TodoItem = ({
       .deleteTodo(id)
       .then(() => { 
         setAllTodos(allTodos => allTodos.filter((todo) => todo.id !== id))
-        setSelectedList(selectedList => selectedList.filter((todo) => todo.id !== id))
       }
     );
   };

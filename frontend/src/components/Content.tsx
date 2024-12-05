@@ -7,10 +7,9 @@ interface ContentProps {
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
 }
 
-const Content = ({ selectedList, listName, setModalStatus, setSelectedTodo, setAllTodos, setSelectedList }: ContentProps) => {
+const Content = ({ selectedList, listName, setModalStatus, setSelectedTodo, setAllTodos }: ContentProps) => {
 
   const handleAddTodo = () => {
     setModalStatus(true)
@@ -41,9 +40,7 @@ const Content = ({ selectedList, listName, setModalStatus, setSelectedTodo, setA
               <TodoItem
                 key={todo.id}
                 todo={todo}
-                listName={listName}
                 setAllTodos={setAllTodos}
-                setSelectedList={setSelectedList}
                 setModalStatus={setModalStatus}
                 setSelectedTodo={setSelectedTodo}
               />
