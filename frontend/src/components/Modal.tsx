@@ -48,8 +48,7 @@ const Modal = ({
       .then((updatedTodo) => {
         setAllTodos(allTodos.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
         setSelectedList(selectedList => selectedList.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
-      }
-      );
+      });
     exitModal();
   };
 
@@ -95,11 +94,9 @@ const Modal = ({
       todoServices
         .toggleCompleteTodo(selectedTodo.id, true)
         .then((updatedTodo) => {
-          setAllTodos(allTodos.map((todo) =>
-              todo.id === selectedTodo.id ? updatedTodo : todo))
-          setSelectedList(selectedList => selectedList.map((todo) =>
-            todo.id === selectedTodo.id ? updatedTodo : todo))
-          });
+          setAllTodos(allTodos.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
+          setSelectedList(selectedList => selectedList.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
+        });
       exitModal();
     } else {
       alert("Cannot mark as complete as item has not been created yet!");
