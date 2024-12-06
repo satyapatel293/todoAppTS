@@ -8,20 +8,26 @@ export const parseDueDate = (todo:Todo) => {
   }
 }
 
-export const formatNewTodo = (newTodo:NewTodo): NewTodo => {
-  if (newTodo.day === '  ') {
-    delete newTodo.day
+export const formatNewTodo = (newTodoData:NewTodo): NewTodo => {
+  const copyTodo = newTodoData
+
+  if (newTodoData.day === '  ') {
+    delete copyTodo.day
   }
-  if (newTodo.month === '  ') {
-    delete newTodo.month
+  
+  if (newTodoData.month === '  ') {
+    delete copyTodo.month
   }
-  if (newTodo.year === '    ') {
-    delete newTodo.year
+  
+  if (newTodoData.year === '    ') {
+    delete copyTodo.year
   }
-  if (newTodo.description?.trim() === '') {
-    delete newTodo.description
+  
+  if (newTodoData.description?.trim() === '') {
+    delete copyTodo.description
   }
-  return newTodo
+
+  return copyTodo
 }
 
 
@@ -41,11 +47,11 @@ export const sortTodos = (allTodos: Todo[]): Todo[] => {
 }
 
 
-export const completedTodos = (allTodos:Todo[]):Todo[] => {
+export const getCompletedTodos = (allTodos:Todo[]):Todo[] => {
   return allTodos.filter(todo => todo.completed)
 } 
 
-export const dateSortedTodos = (allTodos: Todo[]) => {
+export const groupAndSortTodosByDate = (allTodos: Todo[]) => {
   const dateGroupTodos: DateGroupedTodos = []
   allTodos.forEach(todo => {
     const date = parseDueDate(todo)
@@ -82,22 +88,20 @@ const sortByDate = (list:DateGroupedTodos) => {
   })
 }
 
-export const filterByListName = (allTodos:Todo[], listName:string) => {
+export const filterTodosByListName = (allTodos:Todo[], listName:string) => {
   if (listName === 'All Todos') {
     return allTodos
-  } else if (listName === 'Completed') {
-    return completedTodos(allTodos)
-  }
-
-  const todoAtDate = dateSortedTodos(allTodos).find(group => group.date === listName.replace(' done', ''))?.list
-
-  if (todoAtDate === undefined) {
-    return []
-  }
-  
-  if (listName.includes(' done')) {
-    return completedTodos(todoAtDate)
   } 
   
-  return todoAtDate
+  if (listName === 'Completed') {
+    return getCompletedTodos(allTodos)
+  }
+
+  const groupedTodos = groupAndSortTodosByDate(allTodos)
+  const matchedGroup = groupedTodos.find(group => group.date === listName.replace(' done', ''))
+  
+  if (matchedGroup === undefined) return []
+  return listName.includes(' done') ? 
+    getCompletedTodos(matchedGroup.list)
+    : matchedGroup.list
 }

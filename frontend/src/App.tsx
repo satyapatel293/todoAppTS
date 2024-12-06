@@ -1,6 +1,6 @@
 import { Todo } from "./types";
 import { useState, useEffect } from "react";
-import { filterByListName, sortTodos } from "./utils";
+import { filterTodosByListName, sortTodos } from "./utils";
 import todoServices from "./services/todo";
 import Nav from "./components/Nav";
 import Content from "./components/Content";
@@ -8,6 +8,8 @@ import Modal from "./components/Modal";
 import "../public/todo_v2.css";
 
 function App() {
+  console.log('render')
+
   const [allTodos, setAllTodos] = useState<Todo[]>([]);
   const [listName, setListName] = useState<string>('All Todos')  
   const [modalStatus, setModalStatus] = useState<boolean>(false);
@@ -22,7 +24,7 @@ function App() {
     initializeState()
   }, []);
 
-  const sortedSelectedList = sortTodos(filterByListName(allTodos, listName))
+  const sortedSelectedList = sortTodos(filterTodosByListName(allTodos, listName))
 
   return (
     <>

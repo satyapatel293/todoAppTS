@@ -30,7 +30,11 @@ const Modal = ({
   };
 
   const updateExistingTodo = async () => {
-    if (selectedTodo === null) return;
+    if (title.trim().length < 3) {
+      alert("You must enter a title at least 3 characters long.");
+      return;
+    }
+    
     const updatedTodoData: UpdatedTodo = {
       title,
       description,
@@ -38,7 +42,8 @@ const Modal = ({
       month,
       year,
     };
-
+    
+    if (selectedTodo === null) return;
     const updatedTodo = await todoServices.updateTodo(selectedTodo.id, updatedTodoData);
     setAllTodos((allTodos) =>
       allTodos.map((todo) => (todo.id === selectedTodo.id ? updatedTodo : todo))

@@ -1,5 +1,5 @@
 import { Todo } from "../types";
-import { completedTodos, dateSortedTodos } from "../utils";
+import { getCompletedTodos, groupAndSortTodosByDate } from "../utils";
 
 interface NavProps {
   allTodos: Todo[];
@@ -8,7 +8,7 @@ interface NavProps {
 }
 
 const Nav = ({ allTodos, listName, setListName }: NavProps) => {
-  const completed = completedTodos(allTodos);
+  const completed = getCompletedTodos(allTodos);
 
   const navLink = (date: string, list: Todo[]) => {
     return (
@@ -39,7 +39,7 @@ const Nav = ({ allTodos, listName, setListName }: NavProps) => {
             </header>
           </div>
           <article id="all_lists">
-            {dateSortedTodos(allTodos).map((group) => {
+            {groupAndSortTodosByDate(allTodos).map((group) => {
               return navLink(group.date, group.list);
             })}
           </article>
@@ -54,7 +54,7 @@ const Nav = ({ allTodos, listName, setListName }: NavProps) => {
             </header>
           </div>
           <article id="completed_lists">
-            {dateSortedTodos(completed).map((group) => {
+            {groupAndSortTodosByDate(completed).map((group) => {
               const formattedDate = `${group.date} done`;
               return navLink(formattedDate, group.list);
             })}
