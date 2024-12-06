@@ -1,26 +1,29 @@
 import { Todo } from "../types";
-import { completedTodos, dateSortedTodos } from "../utils";
+import { getCompletedTodos, groupAndSortTodosByDate } from "../utils";
 
 interface NavProps {
   allTodos: Todo[];
   listName: string;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>;
   setListName: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const Nav = ({
-  allTodos,
-  listName,
-  setSelectedList,
-  setListName,
-}: NavProps) => {
-  
-  const handleClick = (list: Todo[], name: string) => {
-    setSelectedList(list);
-    setListName(name);
-  };
+const Nav = ({ allTodos, listName, setListName }: NavProps) => {
+  const completed = getCompletedTodos(allTodos);
 
-  const completed = completedTodos(allTodos)
+  const navLink = (date: string, list: Todo[]) => {
+    return (
+      <dl
+        key={date}
+        className={date === listName ? "active" : ""}
+        onClick={() => setListName(date)}
+      >
+        <dt>
+          <time>{date.replace(" done", "")}</time>
+        </dt>
+        <dd>{list.length}</dd>
+      </dl>
+    );
+  };
 
   return (
     <div>
@@ -28,33 +31,16 @@ const Nav = ({
       <div id="sidebar">
         <section id="all">
           <div id="all_todos">
-            <header id="all_header" className={"All Todos" === listName ? "active" : ""} >
-                <dl
-                  onClick={() => handleClick(allTodos, "All Todos")}
-                >
-                  <dt>
-                    <time>All Todos</time>
-                  </dt>
-                  <dd>{allTodos.length}</dd>
-                </dl>
+            <header
+              id="all_header"
+              className={"All Todos" === listName ? "active" : ""}
+            >
+              {navLink("All Todos", allTodos)}
             </header>
           </div>
           <article id="all_lists">
-            {dateSortedTodos(allTodos).map((group) => {
-              const date = Object.keys(group)[0];
-              const list = group[date]
-              return (
-                <dl
-                  key={date}
-                  className={date === listName ? "active" : ""}
-                  onClick={() => handleClick(list, date)}
-                >
-                  <dt>
-                    <time>{date}</time>
-                  </dt>
-                  <dd>{list.length}</dd>
-                </dl>
-              );
+            {groupAndSortTodosByDate(allTodos).map((group) => {
+              return navLink(group.date, group.list);
             })}
           </article>
         </section>
@@ -62,34 +48,15 @@ const Nav = ({
           <div id="completed_todos">
             <header
               id="all_done_header"
-              className={"Completed" === listName ? "active" : ""} >
-              <dl
-                onClick={() => handleClick(completed, "Completed")}
-              >
-                <dt>
-                  <time>Completed</time>
-                </dt>
-                <dd>{completed.length}</dd>
-              </dl>
-          </header>
+              className={"Completed" === listName ? "active" : ""}
+            >
+              {navLink("Completed", completed)}
+            </header>
           </div>
           <article id="completed_lists">
-          {dateSortedTodos(completed).map((group) => {
-              const date = Object.keys(group)[0];
-              const list = group[date]
-              const formattedName = `${date} done`
-              return (
-                <dl
-                  key={date}
-                  className={formattedName === listName ? "active" : ""}
-                  onClick={() => handleClick(list, formattedName)}
-                >
-                  <dt>
-                    <time>{date}</time>
-                  </dt>
-                  <dd>{list.length}</dd>
-                </dl>
-              );
+            {groupAndSortTodosByDate(completed).map((group) => {
+              const formattedDate = `${group.date} done`;
+              return navLink(formattedDate, group.list);
             })}
           </article>
         </section>

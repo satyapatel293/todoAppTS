@@ -2,21 +2,24 @@ import { Todo } from "../types";
 import TodoItem from "./TodoItem";
 
 interface ContentProps {
+  listName: string;
+  selectedList: Todo[];
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
   setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  selectedList: Todo[]
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
-  listName: string
 }
 
-const Content = ({ setModalStatus, setSelectedTodo, setAllTodos, selectedList, listName, setSelectedList}: ContentProps) => {
-
-  const handleAddTodo = (event:React.SyntheticEvent) => {
-    event.preventDefault()
-    setModalStatus(true)
-    setSelectedTodo(null)
-  }
+const Content = ({
+  listName,
+  selectedList,
+  setAllTodos,
+  setSelectedTodo,
+  setModalStatus,
+}: ContentProps) => {
+  const handleAddTodo = () => {
+    setSelectedTodo(null);
+    setModalStatus(true);
+  };
 
   return (
     <div id="items">
@@ -26,7 +29,7 @@ const Content = ({ setModalStatus, setSelectedTodo, setAllTodos, selectedList, l
         </label>
         <dl>
           <dt>
-            <time>{listName.replace(' done', '')}</time>
+            <time>{listName.replace(" done", "")}</time>
           </dt>
           <dd>{selectedList.length}</dd>
         </dl>
@@ -43,10 +46,8 @@ const Content = ({ setModalStatus, setSelectedTodo, setAllTodos, selectedList, l
                 key={todo.id}
                 todo={todo}
                 setAllTodos={setAllTodos}
-                setSelectedList={setSelectedList}
-                setModalStatus={setModalStatus}
                 setSelectedTodo={setSelectedTodo}
-                listName={listName}
+                setModalStatus={setModalStatus}
               />
             ))}
           </tbody>

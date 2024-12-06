@@ -1,5 +1,3 @@
-
-
 export interface Todo {
   id: number
   title: string
@@ -12,3 +10,8 @@ export interface Todo {
 
 export type NewTodo = Omit<Partial<Todo>, 'id' | 'title'> & {title: string}
 export type UpdatedTodo = Omit<Partial<Todo>, 'id'>
+
+export type DateGroupedTodos = { 
+  date: string
+  list: Todo[] 
+}[]

@@ -1,4 +1,4 @@
-import { NewTodo, Todo } from "./types";
+import { NewTodo, Todo, DateGroupedTodos } from "./types";
 
 export const parseDueDate = (todo:Todo) => {
   if (todo.month.trim() && todo.year.trim()) {
@@ -8,20 +8,26 @@ export const parseDueDate = (todo:Todo) => {
   }
 }
 
-export const formatNewTodo = (newTodo:NewTodo): NewTodo => {
-  if (newTodo.day === '  ') {
-    delete newTodo.day
+export const formatNewTodo = (newTodoData:NewTodo): NewTodo => {
+  const copyTodo = newTodoData
+
+  if (newTodoData.day === '  ') {
+    delete copyTodo.day
   }
-  if (newTodo.month === '  ') {
-    delete newTodo.month
+  
+  if (newTodoData.month === '  ') {
+    delete copyTodo.month
   }
-  if (newTodo.year === '    ') {
-    delete newTodo.year
+  
+  if (newTodoData.year === '    ') {
+    delete copyTodo.year
   }
-  if (newTodo.description?.trim() === '') {
-    delete newTodo.description
+  
+  if (newTodoData.description?.trim() === '') {
+    delete copyTodo.description
   }
-  return newTodo
+
+  return copyTodo
 }
 
 
@@ -41,32 +47,32 @@ export const sortTodos = (allTodos: Todo[]): Todo[] => {
 }
 
 
-export const completedTodos = (allTodos:Todo[]):Todo[] => {
+export const getCompletedTodos = (allTodos:Todo[]):Todo[] => {
   return allTodos.filter(todo => todo.completed)
 } 
 
-export const dateSortedTodos = (allTodos: Todo[]) => {
-  const dateGroupTodos:{ [date:string]:Todo[] }[] = []
+export const groupAndSortTodosByDate = (allTodos: Todo[]) => {
+  const dateGroupTodos: DateGroupedTodos = []
   allTodos.forEach(todo => {
     const date = parseDueDate(todo)
     const index = dateGroupTodos.findIndex(group => {
-      return date in group
+      return group.date === date
     })
     
     if (index !== -1) {
-      dateGroupTodos[index][date].push(todo)
+      dateGroupTodos[index].list.push(todo)
     } else {
-      dateGroupTodos.push({[date]: [todo]})
+      dateGroupTodos.push({date:date, list:[todo]})
     }
   })
 
   return sortByDate(dateGroupTodos)
 }
 
-const sortByDate = (list:{ [date:string]:Todo[] }[]) : { [date:string]:Todo[] }[] => {
+const sortByDate = (list:DateGroupedTodos) => {
   return list.sort((a, b) => {
-    const dateA = Object.keys(a)[0]
-    const dateB = Object.keys(b)[0]
+    const dateA = a.date
+    const dateB = b.date
 
     if (dateA === 'No Due Date') return -1
     if (dateB === 'No Due Date') return 1 
@@ -80,4 +86,22 @@ const sortByDate = (list:{ [date:string]:Todo[] }[]) : { [date:string]:Todo[] }[
 
     return monthA-monthB
   })
+}
+
+export const filterTodosByListName = (allTodos:Todo[], listName:string) => {
+  if (listName === 'All Todos') {
+    return allTodos
+  } 
+  
+  if (listName === 'Completed') {
+    return getCompletedTodos(allTodos)
+  }
+
+  const groupedTodos = groupAndSortTodosByDate(allTodos)
+  const matchedGroup = groupedTodos.find(group => group.date === listName.replace(' done', ''))
+  
+  if (matchedGroup === undefined) return []
+  return listName.includes(' done') ? 
+    getCompletedTodos(matchedGroup.list)
+    : matchedGroup.list
 }

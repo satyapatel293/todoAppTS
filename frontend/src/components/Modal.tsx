@@ -4,23 +4,19 @@ import { NewTodo, Todo, UpdatedTodo } from "../types";
 import { formatNewTodo } from "../utils";
 
 interface ModalProps {
-  allTodos: Todo[];
   selectedTodo: Todo | null;
   setAllTodos: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
   setModalStatus: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedList: React.Dispatch<React.SetStateAction<Todo[]>>
-  setListName: React.Dispatch<React.SetStateAction<string>>
+  setSelectedTodo: React.Dispatch<React.SetStateAction<Todo | null>>;
+  setListName: React.Dispatch<React.SetStateAction<string>>;
 }
 
 const Modal = ({
-  allTodos,
   selectedTodo,
-  setSelectedTodo,
   setAllTodos,
   setModalStatus,
-  setSelectedList,
-  setListName
+  setSelectedTodo,
+  setListName,
 }: ModalProps) => {
   const [title, setTitle] = useState(selectedTodo ? selectedTodo.title : "");
   const [description, setDescription] = useState(selectedTodo ? selectedTodo.description : "");
@@ -29,12 +25,16 @@ const Modal = ({
   const [year, setYear] = useState(selectedTodo ? selectedTodo.year : "    ");
 
   const exitModal = () => {
-    setModalStatus(false);
     setSelectedTodo(null);
+    setModalStatus(false);
   };
 
-  const updateExistingTodo = () => {
-    if (selectedTodo === null) return;
+  const updateExistingTodo = async () => {
+    if (title.trim().length < 3) {
+      alert("You must enter a title at least 3 characters long.");
+      return;
+    }
+    
     const updatedTodoData: UpdatedTodo = {
       title,
       description,
@@ -42,18 +42,21 @@ const Modal = ({
       month,
       year,
     };
-
-    todoServices
-      .updateTodo(selectedTodo.id, updatedTodoData)
-      .then((updatedTodo) => {
-        setAllTodos(allTodos.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
-        setSelectedList(selectedList => selectedList.map((todo) => todo.id === selectedTodo.id ? updatedTodo : todo))
-      }
-      );
+    
+    if (selectedTodo === null) return;
+    const updatedTodo = await todoServices.updateTodo(selectedTodo.id, updatedTodoData);
+    setAllTodos((allTodos) =>
+      allTodos.map((todo) => (todo.id === selectedTodo.id ? updatedTodo : todo))
+    );
     exitModal();
   };
 
-  const addNewTodo = () => {
+  const addNewTodo = async () => {
+    if (title.trim().length < 3) {
+      alert("You must enter a title at least 3 characters long.");
+      return;
+    }
+
     const newTodoData: NewTodo = formatNewTodo({
       title,
       description,
@@ -62,18 +65,9 @@ const Modal = ({
       year,
     });
 
-    if (newTodoData.title.trim().length < 3) {
-      alert('You must enter a title at least 3 characters long.')
-      return
-    }
-
-    todoServices
-      .addTodo(newTodoData)
-      .then((newTodo) => {
-        setAllTodos([...allTodos, newTodo])
-        setSelectedList([...allTodos, newTodo])
-        setListName('All Todos')
-      });  
+    const newTodo = await todoServices.addTodo(newTodoData)
+    setAllTodos((allTodos) => [...allTodos, newTodo]);
+    setListName("All Todos");
     exitModal();
   };
 
@@ -86,20 +80,14 @@ const Modal = ({
     }
   };
 
-  const handleMarkComplete = (
-    event: React.MouseEvent<HTMLButtonElement, MouseEvent>
-  ) => {
+  const handleMarkComplete = async (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     event.preventDefault();
     event.stopPropagation();
     if (selectedTodo) {
-      todoServices
-        .toggleCompleteTodo(selectedTodo.id, true)
-        .then((updatedTodo) => {
-          setAllTodos(allTodos.map((todo) =>
-              todo.id === selectedTodo.id ? updatedTodo : todo))
-          setSelectedList(selectedList => selectedList.map((todo) =>
-            todo.id === selectedTodo.id ? updatedTodo : todo))
-          });
+      const updatedTodo = await todoServices.toggleCompleteTodo(selectedTodo.id, true)
+      setAllTodos((allTodos) =>
+        allTodos.map((todo) =>todo.id === selectedTodo.id ? updatedTodo : todo)
+      );
       exitModal();
     } else {
       alert("Cannot mark as complete as item has not been created yet!");
